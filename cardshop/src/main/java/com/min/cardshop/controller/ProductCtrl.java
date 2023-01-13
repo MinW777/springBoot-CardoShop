@@ -1,5 +1,7 @@
 package com.min.cardshop.controller;
 
+import com.min.cardshop.constant.ProductCategory;
+import com.min.cardshop.dto.ProductParam;
 import com.min.cardshop.dto.ProductRequest;
 import com.min.cardshop.model.Product;
 import com.min.cardshop.service.ProductService;
@@ -7,8 +9,10 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class ProductCtrl {
@@ -24,6 +28,19 @@ public class ProductCtrl {
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+    }
+
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getProducts(
+            @RequestParam (required = false) ProductCategory category,
+            @RequestParam (required = false) String keyword
+    ) {
+        ProductParam productParam = new ProductParam();
+        productParam.setCategory(category);
+        productParam.setKeyword(keyword);
+
+        List<Product> productList = productService.getProducts(productParam);
+        return ResponseEntity.status(HttpStatus.OK).body(productList);
     }
 
     @PostMapping("/product/add")

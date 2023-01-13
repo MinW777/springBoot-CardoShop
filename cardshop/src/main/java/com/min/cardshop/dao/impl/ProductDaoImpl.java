@@ -1,6 +1,7 @@
 package com.min.cardshop.dao.impl;
 
 import com.min.cardshop.dao.intf.ProductDao;
+import com.min.cardshop.dto.ProductParam;
 import com.min.cardshop.dto.ProductRequest;
 import com.min.cardshop.model.Product;
 import com.min.cardshop.rowMapper.ProductRowMapper;
@@ -39,6 +40,29 @@ public class ProductDaoImpl implements ProductDao {
         } else {
             return null;
         }
+    }
+
+
+    @Override
+    public List<Product> getProducts(ProductParam productParam) {
+        String sql = "SELECT  product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date" +
+                " FROM product WHERE 1=1";
+
+        Map<String,Object> map = new HashMap<>();
+
+        if (productParam.getCategory() != null) {
+            sql = sql + " AND category = :category";
+            map.put("category" , productParam.getCategory().name());
+        }
+
+        if (productParam.getKeyword() != null) {
+            sql = sql + " AND product_name LIKE :keyword";
+            map.put("keyword", "%" + productParam.getKeyword() +"%");
+        }
+
+
+        List<Product> productsList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+        return productsList;
     }
 
     @Override
