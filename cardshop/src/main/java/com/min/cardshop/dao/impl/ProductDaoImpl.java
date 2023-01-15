@@ -26,6 +26,16 @@ public class ProductDaoImpl implements ProductDao {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
+    public Integer countProduct(ProductParam productParam) {
+        String sql = "SELECT count(*) FROM product WHERE 1=1";
+        Map<String,Object> map = new HashMap<>();
+        sql = addFilteringSql(sql, map, productParam);
+//        addFilteringSql(sql, map, productParam);
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+        return total;
+    }
+
+    @Override
     public Product getProductById(Integer productId) {
         //寫JDBC
         String sql = "SELECT  product_id, product_name, category, image_url, price, stock, description, created_date, last_modified_date FROM product WHERE product_id = :productId";
@@ -50,15 +60,7 @@ public class ProductDaoImpl implements ProductDao {
 
         Map<String,Object> map = new HashMap<>();
 
-        if (productParam.getCategory() != null) {
-            sql = sql + " AND category = :category";
-            map.put("category" , productParam.getCategory().name());
-        }
-
-        if (productParam.getKeyword() != null) {
-            sql = sql + " AND product_name LIKE :keyword";
-            map.put("keyword", "%" + productParam.getKeyword() +"%");
-        }
+        sql = addFilteringSql(sql, map, productParam);
 
         //升冪or降冪排序
         if (productParam.getSort() == 1) {
@@ -123,4 +125,20 @@ public class ProductDaoImpl implements ProductDao {
         map.put("productId", id);
         namedParameterJdbcTemplate.update(sql, map);
     }
+
+    //私有方法
+    private String addFilteringSql(String sql,  Map<String,Object> map, ProductParam productParam) {
+        if (productParam.getCategory() != null) {
+            sql = sql + " AND category = :category";
+            map.put("category" , productParam.getCategory().name());
+        }
+
+        if (productParam.getKeyword() != null) {
+            sql = sql + " AND product_name LIKE :keyword";
+            map.put("keyword", "%" + productParam.getKeyword() +"%");
+        }
+        return sql;
+    }
+
+
 }

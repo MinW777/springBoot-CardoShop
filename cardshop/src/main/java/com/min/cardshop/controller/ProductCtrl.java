@@ -5,6 +5,7 @@ import com.min.cardshop.dto.ProductParam;
 import com.min.cardshop.dto.ProductRequest;
 import com.min.cardshop.model.Product;
 import com.min.cardshop.service.ProductService;
+import com.min.cardshop.util.Page;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -35,7 +36,7 @@ public class ProductCtrl {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
             @RequestParam (required = false) ProductCategory category,
             @RequestParam (required = false) String keyword,
             @RequestParam (required = true ,defaultValue = "1") Integer sort,
@@ -48,9 +49,16 @@ public class ProductCtrl {
         productParam.setSort(sort);
         productParam.setItems(items);
         productParam.setOffset(offset);
-
-        List<Product> productList = productService.getProducts(productParam);
-        return ResponseEntity.status(HttpStatus.OK).body(productList);
+        //使用參數處理資料
+        List<Product> products = productService.getProducts(productParam);
+        Integer total = productService.countProducts(productParam);
+        //送出JSON obj
+        Page<Product> page = new Page<>();
+        page.setLimit(items);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResult(products);
+        return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     @PostMapping("/product/add")

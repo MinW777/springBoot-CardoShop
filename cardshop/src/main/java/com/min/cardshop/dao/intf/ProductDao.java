@@ -7,6 +7,7 @@ import com.min.cardshop.model.Product;
 import java.util.List;
 
 public interface ProductDao {
+    Integer countProduct(ProductParam category);
 
     Product getProductById(Integer productId);
 

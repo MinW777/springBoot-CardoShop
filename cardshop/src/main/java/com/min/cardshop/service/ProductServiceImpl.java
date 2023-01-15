@@ -11,9 +11,13 @@ import java.util.List;
 
 @Service
 public class ProductServiceImpl implements ProductService{
-
     @Autowired
     private ProductDao productDao;
+
+    @Override
+    public Integer countProducts(ProductParam productParam) {
+        return productDao.countProduct(productParam);
+    }
 
     @Override
     public Product getProductById(Integer id) {

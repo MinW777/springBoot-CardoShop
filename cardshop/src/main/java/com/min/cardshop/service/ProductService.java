@@ -7,6 +7,7 @@ import com.min.cardshop.model.Product;
 import java.util.List;
 
 public interface ProductService {
+    Integer countProducts(ProductParam productParam);
     Product getProductById(Integer id);
 
     List<Product> getProducts(ProductParam productParam);
