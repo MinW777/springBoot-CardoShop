@@ -60,6 +60,17 @@ public class ProductDaoImpl implements ProductDao {
             map.put("keyword", "%" + productParam.getKeyword() +"%");
         }
 
+        //升冪or降冪排序
+        if (productParam.getSort() == 1) {
+            sql = sql + " ORDER BY created_date DESC";
+        } else {
+            sql = sql + " ORDER BY created_date ";
+        }
+
+        //筆數
+        sql = sql + " LIMIT :items OFFSET :offset";
+        map.put("items", productParam.getItems());
+        map.put("offset", productParam.getOffset());
 
         List<Product> productsList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
         return productsList;
